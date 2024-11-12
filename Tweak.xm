@@ -26,7 +26,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"Lookin_3D" object:nil];
         }else if (buttonIndex == 2) {
         	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-				
+
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"Lookin_Export" object:nil];
 			});
         }
@@ -35,26 +35,32 @@
 %end
 %end
 
+static NSString * const kLookinPlistJBPath = @"/var/jb/var/mobile/Library/Preferences/com.chinapyg.lookinloader.plist";
+static NSString * const kLookinPlistPath = @"/var/mobile/Library/Preferences/com.chinapyg.lookinloader.plist";
+static NSString * const kLookinServerJBPath = @"/var/jb/Library/Application Support/LookinLoader/LookinServer.framework/LookinServer";
+static NSString * const kLookinServerPath = @"/Library/Application Support/LookinLoader/LookinServer.framework/LookinServer";
+
+static BOOL isEnabledApp(){
+    NSString*    plistPath = ([[NSFileManager defaultManager] fileExistsAtPath:kLookinPlistJBPath] ? kLookinPlistJBPath : kLookinPlistPath);
+    NSString* bundleIdentifier=[[NSBundle mainBundle] bundleIdentifier];
+    NSLog(@"66661666662 plistPath %@",plistPath);
+    NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
+    NSLog(@"66661666662 prefs %@",prefs);
+    return [prefs[@"apps"] containsObject:bundleIdentifier];
+}
 %ctor{
-
 	@autoreleasepool {
-
-    	NSDictionary* lookinSettings = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.chinapyg.lookin.plist"];
-		NSString* bundleID = [[NSBundle mainBundle] bundleIdentifier];
-		BOOL appEnabled = [[lookinSettings objectForKey:[NSString stringWithFormat:@"LookinEnabled-%@",bundleID]] boolValue];
-		if (appEnabled) {
+		if (isEnabledApp()) {
 			NSFileManager* fileManager = [NSFileManager defaultManager];
-
-			NSString* libPath = @"/usr/lib/Lookin/LookinServer.framework/LookinServer";
-
+    		NSString*    libPath = ([[NSFileManager defaultManager] fileExistsAtPath:kLookinServerJBPath] ? kLookinServerJBPath : kLookinServerPath);
 			if([fileManager fileExistsAtPath:libPath]) {
 				void *lib = dlopen([libPath UTF8String], RTLD_NOW);
 				if (lib) {
 					%init(UIDebug)
-					NSLog(@"[+] LookinLoader loaded!");
+					NSLog(@"[+]66661666662 LookinLoader loaded!");
 				}else {
 					char* err = dlerror();
-					NSLog(@"[+] LookinLoader load failed:%s",err);
+					NSLog(@"[+] 66661666662 LookinLoader load failed:%s",err);
 				}
 			}
 		}

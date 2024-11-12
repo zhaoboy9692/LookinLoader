@@ -1,6 +1,8 @@
-THEOS_DEVICE_IP = 192.168.2.6
+THEOS_DEVICE_IP = 127.0.0.1
+THEOS_DEVICE_PORT = 2222
+THEOS_DEVICE_PASSWORD=alpine
 ARCHS  = arm64 arm64e
-TARGET = iphone:latest:9.0
+TARGET = iphone:14.5:9.0
 ADDITIONAL_OBJCFLAGS = -fobjc-arc
 include $(THEOS)/makefiles/common.mk
 
